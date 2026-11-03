@@ -1,0 +1,373 @@
+#!/usr/bin/python3 -I
+"""Live vLLM speed panel for pc2dash. Reads /metrics once a second.
+Labels are English because the Linux console (tty) has no CJK font.
+Peaks live in memory: they reset when the container restarts or this panel is restarted.
+Per-minute totals are appended to ~/pc2speed-history and never deleted (see the README there);
+nothing is counted while the panel is not running."""
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+import urllib.request
+from collections import deque
+
+URL = "http://localhost:8036/metrics"
+LINE = re.compile(r"^vllm:(\w+)(?:\{([^}]*)\})? (\S+)$", re.M)
+LABEL = re.compile(r'(?:source|position|reason)="(\w+)"')
+MIN_PREFILL = 2000  # tokens; below this a request's prefill rate is mostly noise
+MIN_MISS = 10000  # tokens; shorter contexts are not worth flagging as evicted
+
+GEN = "generation_tokens_total"
+COMP = "prompt_tokens_by_source_total:local_compute"
+HIT = "prompt_tokens_by_source_total:local_cache_hit"
+DRAFTS = "spec_decode_num_drafts_total"
+DTOK = "spec_decode_num_draft_tokens_total"
+ACC = "spec_decode_num_accepted_tokens_total"
+POS = [f"spec_decode_num_accepted_tokens_per_pos_total:{i}" for i in range(3)]
+RUN = "num_requests_running"
+WAIT = "num_requests_waiting"
+KV = "kv_cache_usage_perc"
+PF_TOK = "request_prefill_kv_computed_tokens_sum"
+PF_SEC = "request_prefill_time_seconds_sum"
+DONE = "request_decode_time_seconds_count"
+PROMPT = "request_prompt_tokens_sum"
+PROMPT_N = "request_prompt_tokens_count"
+PREEMPT = "num_preemptions_total"
+CAP_WAIT = "num_requests_waiting_by_reason:capacity"
+E2E = "e2e_request_latency_seconds_sum"
+HISTORY = os.path.expanduser("~/pc2speed-history")
+DAY = 86400
+
+RESET, BOLD, DIM = "\x1b[0m", "\x1b[1m", "\x1b[2m"
+CYAN, GREEN, YELLOW, RED = "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m"
+
+
+def scrape():
+    m = {}
+    for name, labels, val in LINE.findall(urllib.request.urlopen(URL, timeout=2).read().decode()):
+        if name.endswith(("_bucket", "_created")):
+            continue
+        src = LABEL.search(labels)
+        key = f"{name}:{src.group(1)}" if src else name
+        m[key] = m.get(key, 0.0) + float(val)
+    return m
+
+
+def layout():
+    """Weights, KV and graph GiB per card from the startup log; nvidia-smi cannot split a process's memory."""
+    try:
+        log = subprocess.run(["docker", "logs", "fnext-vllm"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=10).stdout.decode(errors="replace")
+    except (OSError, subprocess.SubprocessError):
+        return None
+    found = [re.findall(r, log) for r in (r"Model loading took ([\d.]+) GiB", r"reserved ([\d.]+) GiB memory for KV", r"Graph capturing finished in \d+ secs, took ([\d.]+) GiB")]
+    return [float(f[-1]) for f in found] if all(found) else None
+
+
+def cards():
+    """(used, total, free) GiB per card; free excludes the driver reserve."""
+    try:
+        out = subprocess.run(["nvidia-smi", "--query-gpu=memory.used,memory.total,memory.free", "--format=csv,noheader,nounits"], stdout=subprocess.PIPE, timeout=5).stdout.decode()
+        return [tuple(float(x) / 1024 for x in line.split(",")) for line in out.splitlines()]
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return []
+
+
+def span(a, b):
+    return f"{a:.1f}" if abs(a - b) < 0.05 else f"{a:.1f}-{b:.1f}"
+
+
+def vram_lines(mem, split, kv, day, st, cur, width, label):
+    if not mem:
+        return []
+    used = [m[0] for m in mem]
+    total = mem[0][1]
+    free = [m[2] for m in mem]
+    if not split:
+        text = f"used {span(min(used), max(used))} of {total:.1f}  free {span(min(free), max(free))} GiB/card"
+        return [f"{label('VRAM')}{text}"]
+    weights, kv_gib, graph = split
+    other = [u - weights - kv_gib - graph for u in used]
+    text = f" weights {weights:.1f}  KV {kv_gib:.1f}  other {span(min(other), max(other))}  free {span(min(free), max(free))} GiB/card"
+    bar = max(10, width - 9 - len(text))
+    cols = lambda g: int(round(g / total * bar))
+    w_c, k_c = cols(weights), cols(kv_gib)
+    k_on = min(k_c, int(round(k_c * kv))) if kv else 0
+    o_c = cols(max(used) - weights - kv_gib)
+    rest = max(0, bar - w_c - k_c - o_c)
+    block, shade, light = "█", "▒", "░"
+    vis = f"{GREEN}{block * w_c}{YELLOW}{block * k_on}{shade * (k_c - k_on)}{RESET}{shade * o_c}{DIM}{light * rest}{RESET}"
+    cur = cur or {}
+    line = (f"{label('KV')}{BOLD}{kv * 100:5.1f}%{RESET} in use = {kv * kv_gib:.2f} GiB/card  {DIM}24h peak{RESET} {day['kv'] * 100:.0f}%"
+            f"  {DIM}preempted{RESET} {cur.get(PREEMPT, 0):.0f}  {DIM}waiting for KV{RESET} {cur.get(CAP_WAIT, 0):.0f}")
+    recent = "  ".join(f"{RED if is_miss(ctx, new) else ''}{k(ctx)}/{k(new)}{RESET}" for ctx, new in st.reqs)
+    reqs = f"{label('RECENT')}{DIM}ctx/recomputed{RESET}  {recent or '--'}"
+    return [f"{label('VRAM')}{vis}{text}", line, reqs]
+
+
+def is_miss(ctx, new):
+    """A long context that is mostly recomputed was not in KV: evicted or never seen."""
+    return ctx >= MIN_MISS and new >= ctx / 2
+
+
+def k(x):
+    return f"{x / 1000:.1f}k" if x >= 1000 else f"{x:.0f}"
+
+
+def ago(t, now):
+    s = now - t
+    return "now" if s < 3 else f"{s:.0f}s ago" if s < 120 else f"{s / 60:.0f}m ago" if s < 7200 else f"{s / 3600:.0f}h ago"
+
+
+def pct(a, b):
+    return f"{100 * a / b:3.0f}%" if b else " --%"
+
+
+class Stats:
+    def __init__(self):
+        self.ticks = {}  # concurrency -> recent (tokens, seconds)
+        self.seen = {}  # concurrency -> time of last tick
+        self.last = {}
+        self.best = {}
+        self.pf_last = None
+        self.pf_best = 0.0
+        self.reqs = deque(maxlen=8)  # finished requests: (context tokens, recomputed tokens)
+        self.active = deque(maxlen=10)  # per generating second: (accepted, draft tokens, drafts, gen, pos0, pos1, pos2, seconds)
+
+    def tick(self, n, tok, dt, now):
+        if now - self.seen.get(n, 0) > 10:
+            self.ticks[n] = deque(maxlen=5)
+        q = self.ticks[n]
+        q.append((tok, dt))
+        self.seen[n] = now
+        # Concurrent runs need longer: a two-second overlap is mostly a tail and a prefill.
+        if len(q) >= (2 if n == 1 else 3):
+            rate = sum(a for a, _ in q) / sum(b for _, b in q)
+            self.last[n] = rate
+            if len(q) >= 3:
+                self.best[n] = max(self.best.get(n, 0.0), rate)
+
+    def window(self, secs):
+        return [sum(col) for col in zip(*list(self.active)[-secs:])] if self.active else [0.0] * 8
+
+
+class Minutes:
+    """Per-minute totals in monthly append-only files. Only the last 24h are held in memory."""
+
+    def __init__(self):
+        self.rows = deque()
+        self.open = None
+        try:
+            os.makedirs(HISTORY, exist_ok=True)
+            for name in sorted(n for n in os.listdir(HISTORY) if n.endswith(".jsonl"))[-2:]:
+                with open(os.path.join(HISTORY, name)) as f:
+                    for line in f:
+                        try:
+                            self.rows.append(json.loads(line))
+                        except ValueError:
+                            pass
+        except OSError:
+            pass
+        self.prune(time.time())
+
+    def prune(self, now):
+        while self.rows and self.rows[0]["m"] * 60 < now - DAY:
+            self.rows.popleft()
+
+    def roll(self, now):
+        if not self.open or self.open["m"] == int(now // 60):
+            return
+        self.rows.append(self.open)
+        self.prune(now)
+        try:
+            with open(os.path.join(HISTORY, time.strftime("%Y-%m.jsonl", time.gmtime(self.open["m"] * 60))), "a") as f:
+                f.write(json.dumps(self.open) + "\n")
+        except OSError:
+            pass
+        self.open = None
+
+    def add(self, now, kv, deltas):
+        self.roll(now)
+        if kv <= 0 and not any(deltas.values()):
+            return
+        if not self.open:
+            self.open = {"m": int(now // 60), "kv": 0.0}
+        self.open["kv"] = max(self.open["kv"], kv)
+        for key, val in deltas.items():
+            self.open[key] = self.open.get(key, 0.0) + val
+
+    def totals(self, now):
+        self.prune(now)
+        out = {"kv": 0.0, "first": None}
+        for row in list(self.rows) + ([self.open] if self.open else []):
+            out["first"] = out["first"] or row["m"] * 60
+            for key, val in row.items():
+                if key == "kv":
+                    out["kv"] = max(out["kv"], val)
+                elif key != "m":
+                    out[key] = out.get(key, 0.0) + val
+        return out
+
+
+def chart(hist, width, rows):
+    top = max(400.0, max(hist, default=0.0))
+    top = -(-int(top) // 100) * 100
+    out = []
+    data = list(hist)[-width:]
+    data = [0.0] * (width - len(data)) + data
+    for r in range(rows):
+        cells = []
+        for v in data:
+            level = v / top * rows * 2 - (rows - 1 - r) * 2
+            cells.append("█" if level >= 2 else "▄" if level >= 1 else " ")
+        tag = f"{top:5d} " if r == 0 else "    0 " if r == rows - 1 else "      "
+        out.append(f"{DIM}{tag}{RESET}{GREEN}{''.join(cells)}{RESET}")
+    return out
+
+
+def render(st, cur, now, phase, rate, hist, phase_for, mem, split, day):
+    size = shutil.get_terminal_size((120, 11))
+    w, h = size.columns, size.lines
+    label = lambda s: f"{BOLD}{CYAN}{s:<8}{RESET}"
+    val = lambda s: f"{BOLD}{s}{RESET}"
+    colour = {"GENERATE": GREEN, "PREFILL": YELLOW, "OFFLINE": RED}.get(phase, DIM)
+    state = phase + (f" {phase_for:.0f}s" if phase == "PREFILL" else "")
+    head = f"{BOLD}r10 speed{RESET}  {colour}{BOLD}{state:<12}{RESET}"
+    if cur:
+        hit, comp = cur.get(HIT, 0.0), cur.get(COMP, 0.0)
+        head += (f"  run {val(f'{cur.get(RUN, 0):.0f}')}  wait {val(f'{cur.get(WAIT, 0):.0f}')}"
+                 f"  cache hit {pct(hit, hit + comp).strip()}")
+    head += f"  {DIM}{time.strftime('%H:%M:%S')}{RESET}"
+    lines = [head]
+
+    full = max(10, w - 27)
+    fill = min(full, int(rate / 1400 * full))
+    lines.append(f"{label('NOW')}{val(f'{rate:5.0f}')} tok/s  {GREEN}{chr(0x2588) * fill}{RESET}{DIM}{chr(0x2591) * (full - fill)}{RESET} 1400")
+
+    if 1 in st.last:
+        lines.append(f"{label('SINGLE')}{val(f'{st.last[1]:5.0f}')} tok/s  best {val(f'{st.best.get(1, 0):.0f}')}  {DIM}{ago(st.seen[1], now)}{RESET}")
+    else:
+        lines.append(f"{label('SINGLE')}    -- tok/s  {DIM}no one-stream run yet{RESET}")
+
+    multi = [n for n in st.last if n >= 2]
+    if multi:
+        n = max(multi, key=lambda x: st.seen[x])
+        best = "  ".join(f"x{i} {val(f'{st.best[i]:.0f}')}" for i in sorted(st.best) if i >= 2)
+        each = f"{st.last[n] / n:.0f}"
+        lines.append(f"{label('CONCUR')}{val(f'{st.last[n]:5.0f}')} tok/s  x{n} ({each} each)  {DIM}{ago(st.seen[n], now)}{RESET}  best {best}")
+    else:
+        lines.append(f"{label('CONCUR')}    -- tok/s  {DIM}no concurrent run yet{RESET}")
+
+    if st.pf_last:
+        r, tok, sec, t = st.pf_last
+        lines.append(f"{label('PREFILL')}{val(f'{k(r):>5}')} tok/s  {k(tok)} tok in {sec:.1f}s  best {val(k(st.pf_best))}  {DIM}{ago(t, now)}, shown when a request ends{RESET}")
+    else:
+        lines.append(f"{label('PREFILL')}    -- tok/s  {DIM}needs a finished request with {MIN_PREFILL}+ uncached tokens{RESET}")
+
+    a10 = st.window(10)
+    drafts = day.get("drafts", 0.0)
+    if cur and day.get("dtok"):
+        pos = "/".join(pct(day.get(f"p{i}", 0.0), drafts).strip() for i in range(3))
+        steps = a10[2] / a10[7] if a10[7] else 0.0
+        per = day.get("gen", 0.0) / drafts if drafts else 0.0
+        lines.append(f"{label('ACCEPT')}{val(pct(a10[0], a10[1]).rjust(5))} 10s  {val(pct(day.get('acc', 0.0), day['dtok']).strip())} 24h  "
+                     f"{pct(cur.get(ACC, 0), cur.get(DTOK, 0)).strip()} all  {DIM}pos{RESET} {pos}  "
+                     f"{DIM}tok/step{RESET} {per:.2f}  {DIM}steps/s{RESET} {steps:.0f}")
+    else:
+        lines.append(f"{label('ACCEPT')}  --%   {DIM}no drafts yet{RESET}")
+
+    if day.get("e2e"):
+        since = "" if now - day["first"] >= DAY - 60 else f"  {DIM}since {time.strftime('%H:%M', time.localtime(day['first']))}{RESET}"
+        share = f"{100 * day.get('pf', 0.0) / day['e2e']:.1f}%"
+        lines.append(f"{label('24H')}{DIM}recompute{RESET} {val(share)} = {day.get('pf', 0.0):.0f}s of {day['e2e']:.0f}s request time  "
+                     f"{DIM}misses{RESET} {day.get('miss', 0.0):.0f} ({day.get('miss_s', 0.0):.0f}s)  {DIM}reqs{RESET} {day.get('n', 0.0):.0f}  "
+                     f"{DIM}hit{RESET} {pct(day.get('prompt', 0.0) - day.get('comp', 0.0), day.get('prompt', 0.0)).strip()}{since}")
+    else:
+        lines.append(f"{label('24H')}{DIM}no finished requests yet{RESET}")
+
+    lines += vram_lines(mem, split, cur.get(KV, 0.0) if cur else 0.0, day, st, cur, w, label)
+    rows = h - len(lines)
+    if rows >= 2:
+        lines += chart(hist, max(10, w - 7), rows)
+    sys.stdout.write("\x1b[H" + "\x1b[K\r\n".join(lines[:h]) + "\x1b[K\x1b[J")
+    sys.stdout.flush()
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stdout.write("\x1b[?25l\x1b[?7l\x1b[2J")  # hide cursor, no line wrap
+    st = Stats()
+    hist = deque(maxlen=400)
+    prev = None
+    prev_t = 0.0
+    gen_before = False
+    pf_start = None
+    next_t = time.monotonic()
+    split, split_at = layout(), time.monotonic()
+    mem, mem_at = cards(), time.monotonic()
+    minutes = Minutes()
+    while True:
+        try:
+            cur = scrape()
+        except (OSError, ValueError):
+            cur, prev = None, None
+        now = time.time()
+        mono = time.monotonic()
+        rate = 0.0
+        phase = "OFFLINE"
+        if cur:
+            if prev and cur.get(GEN, 0) < prev.get(GEN, 0):  # container restarted
+                st, prev = Stats(), None
+                split, split_at = None, 0.0
+            run = int(cur.get(RUN, 0))
+            phase = "IDLE" if not run and not cur.get(WAIT, 0) else "PREFILL"
+            if prev:
+                d = lambda key: cur.get(key, 0.0) - prev.get(key, 0.0)
+                dt = mono - prev_t
+                tok = d(GEN)
+                rate = tok / dt
+                old = int(prev.get(RUN, 0))
+                if tok > 0:
+                    phase = "GENERATE"
+                    st.active.append((d(ACC), d(DTOK), d(DRAFTS), tok, d(POS[0]), d(POS[1]), d(POS[2]), dt))
+                    if gen_before:
+                        # One stream only counts when nothing started or ended in this second.
+                        if run == 1 and old == 1 and not d(DONE) and not d(COMP) and not d(HIT):
+                            st.tick(1, tok, dt, now)
+                        elif min(run, old) >= 2:
+                            st.tick(max(run, old), tok, dt, now)
+                gen_before = tok > 0
+                miss = miss_s = 0.0
+                if d(PROMPT_N) > 0:
+                    st.reqs.append((d(PROMPT) / d(PROMPT_N), d(PF_TOK) / d(PROMPT_N)))
+                    if is_miss(*st.reqs[-1]):
+                        miss, miss_s = d(PROMPT_N), d(PF_SEC)
+                minutes.add(now, cur.get(KV, 0.0), {
+                    "pf": d(PF_SEC), "e2e": d(E2E), "n": d(PROMPT_N), "prompt": d(PROMPT), "comp": d(PF_TOK), "miss": miss, "miss_s": miss_s,
+                    "acc": d(ACC), "dtok": d(DTOK), "drafts": d(DRAFTS), "gen": tok, "p0": d(POS[0]), "p1": d(POS[1]), "p2": d(POS[2])})
+                if d(PF_TOK) >= MIN_PREFILL and d(PF_SEC) > 0:
+                    r = d(PF_TOK) / d(PF_SEC)
+                    st.pf_last = (r, d(PF_TOK), d(PF_SEC), now)
+                    st.pf_best = max(st.pf_best, r)
+            hist.append(rate)
+            prev, prev_t = cur, mono
+        pf_start = None if phase != "PREFILL" else pf_start or mono
+        if mono - mem_at >= 5:
+            mem, mem_at = cards(), mono
+        if not split and mono - split_at >= 30:
+            split, split_at = layout(), mono
+        minutes.roll(now)
+        render(st, cur, now, phase, rate, hist, mono - pf_start if pf_start else 0.0, mem, split, minutes.totals(now))
+        next_t = max(next_t + 1.0, time.monotonic() + 0.2)
+        time.sleep(next_t - time.monotonic())
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        sys.stdout.write("\x1b[?25h\x1b[?7h\x1b[0m\r\n")

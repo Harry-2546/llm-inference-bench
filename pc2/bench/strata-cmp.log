@@ -1,0 +1,20 @@
+== r10 on PC2 (4x5090 TP4+EP, mem +4000), 2026-10-30 04:57:43
+-- step short
+[code ] tok/s  386.1 (min 383.8 max 390.7) | 768 tok | TTFT 96 ms
+[prose] tok/s  273.7 (min 273.2 max 274.1) | 768 tok | TTFT 98 ms
+[zh   ] tok/s  277.8 (min 269.9 max 285.8) | 768 tok | TTFT 97 ms
+-- step ~32K
+(prompt 44835 tokens, first fill 3.6s)
+[code ] tok/s  371.4 (min 363.4 max 384.1) | 768 tok | TTFT 1311 ms
+[prose] tok/s  275.0 (min 269.8 max 277.7) | 768 tok | TTFT 187 ms
+[zh   ] tok/s  277.5 (min 270.2 max 285.2) | 768 tok | TTFT 153 ms
+-- step ~108K
+(prompt 150535 tokens, first fill 8.8s)
+[code ] tok/s  367.3 (min 361.0 max 373.8) | 768 tok | TTFT 3199 ms
+[prose] tok/s  258.9 (min 255.0 max 262.4) | 768 tok | TTFT 358 ms
+[zh   ] tok/s  277.5 (min 273.0 max 283.6) | 768 tok | TTFT 349 ms
+-- prefill
+[prefill  15701 tok] latency   1.24s (min 1.24) |   12673 tok/s
+[prefill  60381 tok] latency   4.81s (min 4.79) |   12554 tok/s
+xid=0
+DONE

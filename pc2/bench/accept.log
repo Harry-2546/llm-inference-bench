@@ -1,0 +1,17 @@
+prompt temp think |  tok/s accept tok/step
+code      0  True |    292  0.538     2.62
+code    1.0  True |    235  0.378     2.13
+code      0 False |    342  0.690     3.07
+code    1.0 False |    319  0.634     2.91
+prose     0  True |    256  0.426     2.28
+prose   1.0  True |    222  0.335     2.01
+prose     0 False |    256  0.460     2.38
+prose   1.0 False |    242  0.398     2.19
+zh        0  True |    265  0.455     2.36
+zh      1.0  True |    232  0.367     2.10
+zh        0 False |    302  0.565     2.70
+zh      1.0 False |    259  0.452     2.36
+copy      0  True |    329  0.659     2.97
+copy    1.0  True |    318  0.646     2.93
+copy      0 False |    397  0.875     3.62
+copy    1.0 False |    394  0.886     3.66

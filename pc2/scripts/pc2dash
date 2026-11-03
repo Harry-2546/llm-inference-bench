@@ -1,0 +1,14 @@
+#!/bin/bash
+# PC2 console dashboard: left top = speed panel, left bottom = vLLM log, right top = nvtop (GPUs), right bottom = btop (CPU/RAM).
+# Run `pc2dash` after logging in. Detach: Ctrl+b then d (everything keeps running). Re-attach: pc2dash.
+S=pc2
+if ! tmux has-session -t "$S" 2>/dev/null; then
+	tmux new-session -d -s "$S" -x "$(tput cols)" -y "$(tput lines)" \
+		"docker logs -f --tail 200 fnext-vllm 2>&1 | grep --line-buffered -vE 'GET /(health|metrics)'; bash"
+	tmux split-window -h -t "$S" "nvtop; bash"
+	tmux split-window -v -t "$S" "btop; bash"
+	tmux split-window -d -v -b -l 15 -t "$S":0.0 "pc2speed; bash"
+	tmux set -t "$S" mouse on
+	tmux select-pane -t "$S":0.1
+fi
+exec tmux attach -t "$S"

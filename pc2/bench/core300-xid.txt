@@ -1,0 +1,16 @@
+[Sat Oct 31 15:29:20 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:29:25 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:29:29 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: GPU0 kgmmuInvalidateTlb_GM107: TLB invalidation failed waiting for completion (status=0x00000065) for PDB 0x00000000, vaspaceFlags 0x0, scope 0x0, GFID 0
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 175, pid=618693, name=VLLM::Worker_TP, Timeout after 75s of waiting for RPC response from GPU0 GSP! Expected function 76 (GSP_RM_CONTROL) sequenc
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 154, GPU recovery action changed from 0x0 (None) to 0x1 (PF FLR)
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: GPU0 _kgspProcessRpcEvent: Unexpected RPC event from GPU0: 0x4c (GSP_RM_CONTROL), sequence: 1131836
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: Xid (PCI:0000:05:00): 109, pid=618693, name=python3, channel 0x00000002, errorString CTX SWITCH TIMEOUT, Info 0x18001
+[Sat Oct 31 15:30:01 2026] NVRM: GPU0 _kgspProcessRpcEvent: Unexpected RPC event from GPU0: 0x4c (GSP_RM_CONTROL), sequence: 1131837
+[Sat Oct 31 15:30:31 2026] NVRM: GPU0 kgmmuInvalidateTlb_GM107: TLB invalidation failed waiting for prior invalidate (status=0x00000065), vaspaceFlags 0x84004000, scope 0x2, GFID 0

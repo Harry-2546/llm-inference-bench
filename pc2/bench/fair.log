@@ -1,0 +1,25 @@
+== matched ctx (23000 / 77000 words = Strata 32K / 108K), 05:07:59
+-- step ~32K
+(prompt 32235 tokens, first fill 0.2s)
+[code ] tok/s  373.6 (min 370.1 max 376.0) | 768 tok | TTFT 138 ms
+[prose] tok/s  284.2 (min 279.4 max 288.8) | 768 tok | TTFT 140 ms
+[zh   ] tok/s  277.7 (min 273.8 max 282.0) | 768 tok | TTFT 139 ms
+-- step ~108K
+(prompt 107835 tokens, first fill 5.2s)
+[code ] tok/s  366.9 (min 359.2 max 376.3) | 768 tok | TTFT 267 ms
+[prose] tok/s  271.3 (min 269.6 max 273.1) | 768 tok | TTFT 270 ms
+[zh   ] tok/s  271.1 (min 262.5 max 286.4) | 768 tok | TTFT 270 ms
+== concurrency
+[ctx     29 tok] N= 3: aggregate    546 tok/s (end-to-end) | per-stream 231.9 tok/s (min 191) | mean TTFT   499 ms | wall 4.2s
+[ctx     29 tok] N= 1: aggregate    360 tok/s (end-to-end) | per-stream 376.3 tok/s (min 376) | mean TTFT    94 ms | wall 2.1s
+[ctx     29 tok] N= 1: aggregate    371 tok/s (end-to-end) | per-stream 387.8 tok/s (min 388) | mean TTFT    95 ms | wall 2.1s
+[ctx     29 tok] N= 1: aggregate    360 tok/s (end-to-end) | per-stream 376.5 tok/s (min 376) | mean TTFT    95 ms | wall 2.1s
+[ctx     29 tok] N= 2: aggregate    499 tok/s (end-to-end) | per-stream 299.2 tok/s (min 257) | mean TTFT   148 ms | wall 3.1s
+[ctx     29 tok] N= 4: aggregate    778 tok/s (end-to-end) | per-stream 239.5 tok/s (min 205) | mean TTFT   179 ms | wall 3.9s
+[ctx     29 tok] N= 8: aggregate   1223 tok/s (end-to-end) | per-stream 183.3 tok/s (min 159) | mean TTFT   197 ms | wall 5.0s
+[ctx     29 tok] N=16: aggregate    552 tok/s (end-to-end) | per-stream  39.8 tok/s (min 35) | mean TTFT   207 ms | wall 22.3s
+[ctx  32185 tok] N= 1: aggregate    168 tok/s (end-to-end) | per-stream 374.5 tok/s (min 375) | mean TTFT  2529 ms | wall 4.6s
+[ctx  32178 tok] N= 4: aggregate    224 tok/s (end-to-end) | per-stream 141.6 tok/s (min 78) | mean TTFT  6435 ms | wall 13.7s
+[ctx  32296 tok] N= 8: aggregate    245 tok/s (end-to-end) | per-stream  82.5 tok/s (min 36) | mean TTFT 11701 ms | wall 25.1s
+xid=0
+DONE

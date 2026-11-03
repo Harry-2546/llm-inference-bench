@@ -1,0 +1,31 @@
+== XMP3600 healthy 21:25:32
+check: 8/8 correct
+== short-context decode
+[code          ] prompt      83 | tok/s  302.5 | steps/s  116.0 | accept 0.535 | TTFT first   0.09s last   0.09s
+[prose         ] prompt      75 | tok/s  264.2 | steps/s  116.6 | accept 0.422 | TTFT first   0.09s last   0.09s
+[zh            ] prompt      71 | tok/s  249.6 | steps/s  116.5 | accept 0.381 | TTFT first   0.09s last   0.09s
+== decode past native
+[code@483K     ] prompt  482556 | tok/s  287.1 | steps/s  115.8 | accept 0.493 | TTFT first  42.91s last   1.07s
+[prose@483K    ] prompt  482548 | tok/s  277.1 | steps/s  115.2 | accept 0.470 | TTFT first   1.02s last   1.03s
+== needle recall
+needle  274951 tok depth 10% PASS comp 87 | '1385-QH, Hobart'
+needle  274951 tok depth 50% PASS comp 121 | '8959-YK, Cusco'
+needle  274950 tok depth 90% PASS comp 71 | '1818-BW, Osaka'
+needle  483524 tok depth 10% FAIL comp 4000 | ''
+needle  483524 tok depth 30% PASS comp 132 | 'Vault code: 8102-TX; city: Osaka'
+needle  483524 tok depth 50% PASS comp 73 | '4825-VG, Osaka'
+needle  483525 tok depth 70% PASS comp 117 | '8896-NH, Tallinn'
+needle  483524 tok depth 90% PASS comp 118 | '1225-UK, Lisbon'
+needle total 7/8
+== order recall (position-sensitive)
+order 0.05/0.15 expect RED FAIL comp 6000 | ''
+order 0.40/0.50 expect RED PASS comp 111 | 'RED'
+order 0.55/0.65 expect RED PASS comp 112 | 'RED'
+order 0.85/0.95 expect RED FAIL comp 6000 | ''
+order 0.15/0.05 expect BLUE PASS comp 285 | 'BLUE'
+order 0.50/0.40 expect BLUE PASS comp 239 | 'BLUE'
+order 0.65/0.55 expect BLUE PASS comp 118 | 'BLUE'
+order 0.95/0.85 expect BLUE PASS comp 121 | 'BLUE'
+order total 6/8
+xid=0
+DONE

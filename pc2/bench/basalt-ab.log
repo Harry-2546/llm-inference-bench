@@ -1,0 +1,78 @@
+idle since 2026-11-01T08:43:21, stopping r10 09:22:01
+===== single stream (09:22:09)
+ready 09:22:48
+[server] engine   expert-cache=auto prefill=auto kv=int8 resident-experts ctx=524288 (from config)
+[server] auto     peer-excl=off resident=55.2GB pool-affinity=auto pool=11
+[server] loaded   69.6GiB 35.4s  cuda0=28.8GiB ram=39.0GiB cuda1=1.8GiB cuda1-copy=30.0GiB
+[server] kv       0.7/7.8GiB cuda0 elastic
+[server] weights  loaded, ctx=524288 images=off
+check: 8/8 correct
+-- accept
+prompt temp think |  tok/s accept tok/step
+code      0  True |    359  0.000   768.00
+code    1.0  True |    382  0.000   768.00
+code      0 False |    470  0.000   768.00
+code    1.0 False |    463  0.000   768.00
+prose     0  True |    337  0.000   768.00
+prose   1.0  True |    348  0.000   768.00
+prose     0 False |    376  0.000   768.00
+prose   1.0 False |    377  0.000   768.00
+zh        0  True |    343  0.000   768.00
+zh      1.0  True |    325  0.000   768.00
+zh        0 False |    423  0.000   768.00
+zh      1.0 False |    397  0.000   768.00
+copy      0  True |    358  0.000   768.00
+copy    1.0  True |    370  0.000   768.00
+copy      0 False |    669  0.000   768.00
+copy    1.0 False |    758  0.000   768.00
+-- ab
+== short-context decode
+[code          ] prompt      83 | tok/s  399.5 | steps/s    0.0 | accept 0.000 | TTFT first   0.18s last   0.02s
+[prose         ] prompt      75 | tok/s  354.7 | steps/s    0.0 | accept 0.000 | TTFT first   0.15s last   0.03s
+[zh            ] prompt      71 | tok/s  358.6 | steps/s    0.0 | accept 0.000 | TTFT first   0.13s last   0.02s
+== decode past native
+[code@483K     ] prompt  482556 | tok/s  250.0 | steps/s    0.0 | accept 0.000 | TTFT first  42.29s last   0.08s
+[prose@483K    ] prompt  482548 | tok/s  221.9 | steps/s    0.0 | accept 0.000 | TTFT first   4.78s last   0.08s
+== needle recall
+needle  274951 tok depth 10% PASS comp 180 | 'Code: 1385-QH; City: Hobart'
+needle  274951 tok depth 50% PASS comp 88 | '8959-YK, Cusco'
+needle  274950 tok depth 90% PASS comp 79 | '1818-BW, Osaka'
+needle  483524 tok depth 10% PASS comp 118 | '9023-UG, Osaka'
+needle  483524 tok depth 30% PASS comp 71 | '8102-TX, Osaka'
+needle  483524 tok depth 50% PASS comp 180 | '4825-VG, Osaka'
+needle  483525 tok depth 70% PASS comp 87 | '8896-NH, Tallinn'
+needle  483524 tok depth 90% PASS comp 71 | '1225-UK, Lisbon'
+needle total 8/8
+== order recall (position-sensitive)
+order total 8/8
+-- tool call
+finish tool_calls keys ['content', 'reasoning_content', 'role', 'tool_calls'] tool_calls [{"id": "call_2b22abefdcf5498aa4d972ff", "type": "function", "function": {"name": "get_weather", "arguments": "{\"city\":\"Osaka\"}"}}]
+second stop 'It’s currently 21°C and clear in Osaka.'
+[server] s1 done  pp=482576/16384c 1.7s 269164t/s  tg=4505 67.1t/s acc=100%  ttft=39.7s  end=stop  hit=86.4%  pcie=34.7%
+[server] s1 done  pp=482576/16384c 39.7s 11747t/s  tg=163 156.3t/s acc=67%  ttft=39.7s  end=stop  hit=91.3%  pcie=26.8%
+[server] s1 done  pp=482576/16384c 39.6s 11779t/s  tg=208 258.1t/s acc=72%  ttft=39.6s  end=stop  hit=97.8%  pcie=28.4%
+[server] s1 done  pp=482576/16384c 39.5s 11788t/s  tg=279 261.7t/s acc=70%  ttft=39.6s  end=stop  hit=98.2%  pcie=27.3%
+[server] s1 done  pp=306/0c 0.7s  tg=69 383.5t/s acc=91%  ttft=0.8s  end=stop  hit=95.3%  pcie=32.9%
+[server] s1 done  pp=404/375c 0.1s  tg=44 87.2t/s acc=76%  ttft=0.1s  end=stop  hit=98.8%  pcie=30.1%
+57, 238.55 W, 31452 MiB;57, 176.96 W, 32008 MiB;39, 18.74 W, 2 MiB;39, 18.42 W, 2 MiB;
+===== parallel 8 (09:36:21)
+ready 09:37:02
+[server] engine   expert-cache=auto prefill=auto kv=int8 resident-experts ctx=65536 (524288/8 slots) batch=8 (from config)
+[server] auto     peer-excl=off resident=56.8GB pool-affinity=auto pool=11
+[server] loaded   69.5GiB 36.4s  cuda0=26.6GiB ram=41.2GiB cuda1=1.7GiB cuda1-copy=29.6GiB
+[server] kv       2.4/8.9GiB cuda0 elastic slots=8
+[server] slots    par=8 ctx/slot=65536, others queue
+[server] weights  loaded, ctx=65536 images=off
+check: 8/8 correct
+generations 48  corrupt 0  tokens 49152  wall 103s  total 475 tok/s
+short generations: 0
+generations 48  corrupt 0  tokens 49152  wall 99s  total 495 tok/s
+short generations: 0
+generations 48  corrupt 0  tokens 48971  wall 99s  total 495 tok/s
+short generations: 1
+[server] warning: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+[server] warning: max tokens reached while thinking, no answer (set reasoning_budget_tokens, or start with --reasoning-budget-tokens)
+== restore r10 (09:42:18)
+r10 healthy 09:45:50
+xid_new=0
+DONE

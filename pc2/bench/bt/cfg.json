@@ -1,0 +1,2 @@
+{"server": {"model": "/home/USER/basalt/models/Qwen3.8-FN-NVFP4.basalt", "gpu": "0,1", "port": 8037, "alias": "vllm/qwen3.8-flash-next", "parallel": 8},
+ "engine": {"expert-cache": "auto", "prefill": "auto", "kv": "int8", "resident-experts": true, "max-context": 524288}}

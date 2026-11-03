@@ -1,0 +1,40 @@
+== healthy 05:48:33
+(EngineCore pid=327) INFO 10-30 05:47:20 [kv_cache_utils.py:2370] GPU KV cache size: 751,128 tokens, Maximum concurrency for 524,288 tokens per request: 1.43x
+-- needle ~250K
+[ 275218 tok, depth 10%] PASS in  24.8s | expected 9628-HA / Hobart | got: 'The vault code is 9628-HA, and the vault is in Hobart.'
+[ 274627 tok, depth 50%] PASS in  23.3s | expected 5246-DY / Hobart | got: '5246-DY, Hobart'
+[ 274991 tok, depth 90%] PASS in  23.2s | expected 1334-LX / Reykjavik | got: '1334-LX, Reykjavik'
+-- needle ~480K
+Traceback (most recent call last):
+  File "/home/USER/bench/needle.py", line 32, in <module>
+    ans, ptoks, dt = ask(" ".join(words) + q)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/USER/bench/needle.py", line 16, in ask
+    d = json.load(urllib.request.urlopen(req, timeout=3600))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 400: Bad Request
+-- check
+check: 8/8 correct
+-- step short
+[code ] tok/s  386.5 (min 375.7 max 392.0) | 768 tok | TTFT 97 ms
+[prose] tok/s  270.5 (min 264.7 max 277.2) | 768 tok | TTFT 97 ms
+[zh   ] tok/s  285.3 (min 267.7 max 297.9) | 768 tok | TTFT 97 ms
+xid=0
+DONE

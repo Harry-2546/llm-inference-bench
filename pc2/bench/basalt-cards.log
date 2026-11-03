@@ -1,0 +1,121 @@
+last outside request 2026-11-01T08:43:21, now 08:59:07
+r10 stopped
+0, 2 MiB;1, 2 MiB;2, 2 MiB;3, 2 MiB;
+memlock unlimited
+===== cards 0 (08:59:14)
+rc=0 xid_new=0
+community-1: prefill 16K 7013.5 t/s (2.4 s), prefill 64K 9215.0 t/s (7.2 s), decode 231.9 t/s (9480 tokens in 40.9 s), each measured cold
+COMMUNITY ROW:
+    {
+      "submitter": "local",
+      "date": "2026-11-01",
+      "commit": "9175e7a321",
+      "preset": "community-1",
+      "gpus": [
+        {
+          "name": "RTX 5090",
+          "vram_gib": 32,
+          "power_w": 600,
+          "pcie": "4.0 x16",
+          "h2d_gbps": 26.5
+        }
+      ],
+      "ram_gib": 126,
+      "cpu": "12th Gen Intel Core i7-12700K, 12 cores",
+      "ram_gbps": 34.7,
+      "os": "Linux",
+      "quant": "NVFP4",
+      "prefill_16k_tps": 7013.5,
+      "prefill_64k_tps": 9215.0,
+      "decode_tps": 231.9
+    }
+basalt-bench: warning: the row was not added to /tmp/basalt-community.json (cannot open /tmp/basalt-community.json); paste it at the end of the runs list of docs/communit
+42, 101.59 W;39, 23.41 W;41, 18.31 W;41, 20.50 W;
+===== cards 0,1 (09:01:36)
+rc=0 xid_new=0
+      "gpus": [
+        {
+          "name": "RTX 5090",
+          "vram_gib": 32,
+          "power_w": 600,
+          "pcie": "4.0 x16",
+          "h2d_gbps": 26.5
+        },
+        {
+          "name": "RTX 5090",
+          "vram_gib": 32,
+          "power_w": 600,
+          "pcie": "4.0 x16",
+          "h2d_gbps": 26.5
+        }
+      ],
+      "ram_gib": 126,
+      "cpu": "12th Gen Intel Core i7-12700K, 12 cores",
+      "ram_gbps": 34.6,
+      "os": "Linux",
+      "quant": "NVFP4",
+      "prefill_16k_tps": 7029.2,
+      "prefill_64k_tps": 8883.9,
+      "decode_tps": 549.2
+    }
+basalt-bench: warning: the row was not added to /tmp/basalt-community.json (cannot open /tmp/basalt-community.json); paste it at the end of the runs list of docs/communit
+39, 87.79 W;39, 72.97 W;40, 19.20 W;41, 19.69 W;
+===== cards 0,1,2 (09:03:53)
+rc=0 xid_new=0
+        },
+        {
+          "name": "RTX 5090",
+          "vram_gib": 32,
+          "power_w": 600,
+          "pcie": "4.0 x16",
+          "h2d_gbps": 26.5
+        },
+        {
+          "name": "RTX 5090",
+          "vram_gib": 32,
+          "power_w": 600,
+          "pcie": "4.0 x16",
+          "h2d_gbps": 26.5
+        }
+      ],
+      "ram_gib": 126,
+      "cpu": "12th Gen Intel Core i7-12700K, 12 cores",
+      "ram_gbps": 34.7,
+      "os": "Linux",
+      "quant": "NVFP4",
+      "prefill_16k_tps": 7029.2,
+      "prefill_64k_tps": 8842.2,
+      "decode_tps": 461.1
+    }
+basalt-bench: warning: the row was not added to /tmp/basalt-community.json (cannot open /tmp/basalt-community.json); paste it at the end of the runs list of docs/communit
+39, 93.74 W;38, 69.26 W;40, 66.71 W;41, 20.05 W;
+===== cards 0,1,2,3 (09:06:24)
+rc=0 xid_new=0
+        },
+        {
+          "name": "RTX 5090",
+          "vram_gib": 32,
+          "power_w": 600,
+          "pcie": "4.0 x16",
+          "h2d_gbps": 26.5
+        },
+        {
+          "name": "RTX 5090",
+          "vram_gib": 32,
+          "power_w": 600,
+          "pcie": "4.0 x16",
+          "h2d_gbps": 26.5
+        }
+      ],
+      "ram_gib": 126,
+      "cpu": "12th Gen Intel Core i7-12700K, 12 cores",
+      "ram_gbps": 34.7,
+      "os": "Linux",
+      "quant": "NVFP4",
+      "prefill_16k_tps": 7017.9,
+      "prefill_64k_tps": 8692.7,
+      "decode_tps": 396.6
+    }
+basalt-bench: warning: the row was not added to /tmp/basalt-community.json (cannot open /tmp/basalt-community.json); paste it at the end of the runs list of docs/communit
+39, 83.81 W;38, 69.04 W;41, 65.91 W;37, 68.17 W;
+DONE

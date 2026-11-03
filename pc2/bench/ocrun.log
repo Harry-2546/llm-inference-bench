@@ -1,0 +1,27 @@
+== NVML +0 (04:43:51)
+GPU0 mem offset 0 (range -2000..6000), mem clock now 405 MHz, max 14001 MHz
+conc 8x: prompt 17669 tok each, out 12000 tok, wall 20.5s | aggregate decode 944 tok/s | end-to-end 586 tok/s | accept 0.51
+conc 8x: prompt 17665 tok each, out 12000 tok, wall 20.7s | aggregate decode 930 tok/s | end-to-end 580 tok/s | accept 0.51
+check: 8/8 correct
+xid=0
+== NVML +4000 (04:44:38)
+GPU0 mem offset 4000 (range -2000..6000), mem clock now 13801 MHz, max 16001 MHz
+conc 8x: prompt 17666 tok each, out 12000 tok, wall 20.1s | aggregate decode 955 tok/s | end-to-end 597 tok/s | accept 0.50
+conc 8x: prompt 17687 tok each, out 12000 tok, wall 20.2s | aggregate decode 966 tok/s | end-to-end 595 tok/s | accept 0.51
+check: 8/8 correct
+xid=0
+== NVML +5000 (04:45:23)
+GPU0 mem offset 5000 (range -2000..6000), mem clock now 15801 MHz, max 16501 MHz
+conc 8x: prompt 17687 tok each, out 12000 tok, wall 20.4s | aggregate decode 936 tok/s | end-to-end 588 tok/s | accept 0.49
+conc 8x: prompt 17670 tok each, out 12000 tok, wall 20.3s | aggregate decode 969 tok/s | end-to-end 592 tok/s | accept 0.52
+check: 8/8 correct
+xid=0
+== NVML +6000 (04:46:10)
+GPU0 mem offset 6000 (range -2000..6000), mem clock now 16301 MHz, max 17001 MHz
+conc 8x: prompt 17677 tok each, out 12000 tok, wall 20.2s | aggregate decode 952 tok/s | end-to-end 594 tok/s | accept 0.49
+conc 8x: prompt 17674 tok each, out 12000 tok, wall 20.6s | aggregate decode 949 tok/s | end-to-end 583 tok/s | accept 0.49
+check: 8/8 correct
+xid=0
+== final: setting +4000 (last verified)
+GPU0 mem offset 4000 (range -2000..6000), mem clock now 16801 MHz, max 16001 MHz
+DONE

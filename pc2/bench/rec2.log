@@ -1,0 +1,15 @@
+== fresh container 16:28:58
+launched on :8036, model name vllm/qwen3.8-flash-next; healthy in ~10 min
+healthy 16:33:39
+check: 8/8 correct
+decode run 1: 2048 tok in 7.2s = 284 tok/s | steps/s 116.3 | accept 0.48 | TTFT 0.10s | md5 cd426bcd
+decode run 2: 2048 tok in 5.7s = 361 tok/s | steps/s 116.1 | accept 0.70 | TTFT 0.10s | md5 265f39c3
+decode run 3: 2048 tok in 6.5s = 314 tok/s | steps/s 116.2 | accept 0.57 | TTFT 0.09s | md5 b8aaef20
+== restart same container (autotune cache path) 16:34:06
+healthy 16:37:51
+check: 8/8 correct
+decode run 1: 2048 tok in 7.5s = 273 tok/s | steps/s 116.3 | accept 0.45 | TTFT 0.10s | md5 0257b720
+decode run 2: 2048 tok in 5.5s = 372 tok/s | steps/s 116.1 | accept 0.74 | TTFT 0.10s | md5 522867a0
+decode run 3: 2048 tok in 6.1s = 336 tok/s | steps/s 116.1 | accept 0.63 | TTFT 0.09s | md5 3575e080
+xid 0
+DONE

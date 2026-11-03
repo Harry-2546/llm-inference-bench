@@ -1,0 +1,24 @@
+===== r10 (09:47:17), last outside 2026-11-01T08:43:21
+ctx  109197 code  tok/s 281 220 244 mean 248 | first fill 8.9s then 0.26s
+ctx  109190 prose tok/s 216 236 202 mean 218 | first fill 0.3s then 0.27s
+ctx  220388 code  tok/s 215 239 268 mean 241 | first fill 18.4s then 0.49s
+ctx  220381 prose tok/s 232 244 211 mean 229 | first fill 0.5s then 0.50s
+ctx  329184 code  tok/s 238 210 254 mean 234 | first fill 28.3s then 0.75s
+ctx  329177 prose tok/s 238 243 242 mean 241 | first fill 0.7s then 0.70s
+===== Basalt 2 cards (09:50:37) http=200
+ctx  109197 code  tok/s 360 275 337 mean 324 | first fill 10.6s then 0.04s
+ctx  109190 prose tok/s 275 287 303 mean 288 | first fill 3.3s then 0.04s
+ctx  220388 code  tok/s 314 306 300 mean 307 | first fill 19.6s then 0.05s
+ctx  220381 prose tok/s 265 275 269 mean 270 | first fill 3.6s then 0.05s
+ctx  329184 code  tok/s 240 269 247 mean 252 | first fill 27.2s then 0.06s
+ctx  329177 prose tok/s 262 246 262 mean 257 | first fill 4.1s then 0.06s
+[server] s1 done  pp=329177/329172c 0.0s  tg=768 261.2t/s acc=63%  ttft=0.0s  end=length  hit=99.5%  pcie=17.4%
+[server] s1 done  pp=329177/329172c 0.0s  tg=768 245.6t/s acc=60%  ttft=0.0s  end=length  hit=99.6%  pcie=15.2%
+[server] s1 done  pp=329177/329172c 0.0s  tg=768 261.2t/s acc=61%  ttft=0.0s  end=length  hit=99.5%  pcie=17.5%
+[server] warning: max tokens reached while thinking, no answer (set reasoning_budget_tokens, or start with --reasoning-budget-tokens)
+[server] warning: max tokens reached while thinking, no answer (set reasoning_budget_tokens, or start with --reasoning-budget-tokens)
+[server] warning: max tokens reached while thinking, no answer (set reasoning_budget_tokens, or start with --reasoning-budget-tokens)
+[server] warning: max tokens reached while thinking, no answer (set reasoning_budget_tokens, or start with --reasoning-budget-tokens)
+r10 healthy 09:56:35
+1
+DONE

@@ -1,0 +1,23 @@
+== offsets 0 0 0 0 (21:59:37)
+steps/s 114.1 113.9 113.8 114.1
+3045 2910 2955 2895 MHz (idle after run)
+  generations 48  corrupt 0  tokens 49152  wall 47s  total 1043 tok/s
+  generations 48  corrupt 0  tokens 49152  wall 45s  total 1087 tok/s
+  generations 48  corrupt 0  tokens 49152  wall 42s  total 1176 tok/s
+  under load: 3045, 60, 316.77;2895, 63, 309.34;2940, 63, 329.07;2887, 56, 295.44;
+  generations 48  corrupt 0  tokens 49152  wall 41s  total 1206 tok/s
+  generations 48  corrupt 0  tokens 49152  wall 41s  total 1197 tok/s
+  check: 8/8 correct
+  level passed (22:03:48)
+== offsets 50 190 145 205 (22:03:48)
+steps/s 116.2 135.8 144.7 140.8
+3082 3067 3075 3090 MHz (idle after run)
+  generations 48  corrupt 0  tokens 49152  wall 47s  total 1054 tok/s
+  
+STOP rc=1
+== reset core offset 0 (22:05:05)
+GPU0 gpc offset 0 mem offset 4000
+GPU1 gpc offset 0 mem offset 4000
+GPU2 gpc offset 0 mem offset 4000
+GPU3 gpc offset 0 mem offset 4000
+DONE

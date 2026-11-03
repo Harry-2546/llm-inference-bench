@@ -1,0 +1,13 @@
+QWEN-PEDIA r10 (nvidia/Qwen3.8-Flash-Next-NVFP4, vLLM eed1f3d0 + r10 overlay rebuilt on v0.29.0 image) on PC2 4x5090 TP4+EP, PEX88096, mem offset NVML +4000 - 2026-10-30, bench_strata.py (BASE :8036, model vllm/qwen3.8-flash-next)
+Tokenizer check: same text gives identical prompt_tokens on Strata and r10 (29 / 27 / 1,421 / 32,221) -> same model family tokenizer, tok/s directly comparable, no conversion needed.
+Matched ctx (23,000 / 77,000 filler words = 32,235 / 107,835 tok, identical to the Strata runs):
+short greedy 768 tok:  code 386.1 | prose 273.7 | zh 277.8 tok/s      (Strata IQ3_XXS 286.6 / 196.7 / 217.2)  +35% / +39% / +28%
+~32K ctx:              code 373.6 | prose 284.2 | zh 277.7 tok/s      (Strata IQ3_XXS 273.9 / 192.4 / 209.2)  +36% / +48% / +33%
+~108K ctx:             code 366.9 | prose 271.3 | zh 271.1 tok/s      (Strata IQ3_XXS 260.7 / 187.2 / 205.7)  +41% / +45% / +32%
+prefill cold:          15,701 tok 1.24 s (12,673 tok/s) | 60,381 tok 4.81 s (12,554 tok/s)   (Strata IQ3_XXS 6,721 / 9,683)  1.9x / 1.3x
+Concurrency, short prompts (code/prose/zh rotated, 768 tok each), aggregate end-to-end tok/s | per-stream:
+  N=1  ~364 | 376-388      N=2  499 | 299      N=4  778 | 240      N=8  1,223 | 183  (3.4x N=1)
+  N=16 552 | 40   <- past the r10 CUDA-graph limit (capture sizes up to 32 tok = 8 seqs x (1+3 spec)); falls off a cliff
+Concurrency, ~32K unique ctx each: N=1 168 (TTFT 2.5 s) | N=4 224 (TTFT 6.4 s) | N=8 245 (TTFT 11.7 s)  -> prefill-bound, prefill is serialized
+Strata same day (IQ3_S 262K+vision config, this PC): N=1 code 205-224 tok/s; N=2 aggregate 174 (TTFT 2.7 s), N=4 176 (TTFT 6.4 s) -> requests queue, single stream only
+xid 0. hermes not run (no snapshot json in this folder).

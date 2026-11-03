@@ -1,0 +1,31 @@
+== B2-bothyarn healthy 15:07:28
+check: 8/8 correct
+== short-context decode
+[code          ] prompt      83 | tok/s  285.2 | steps/s  116.4 | accept 0.483 | TTFT first   0.10s last   0.10s
+[prose         ] prompt      75 | tok/s  269.2 | steps/s  117.0 | accept 0.435 | TTFT first   0.10s last   0.09s
+[zh            ] prompt      71 | tok/s  257.9 | steps/s  117.0 | accept 0.401 | TTFT first   0.10s last   0.10s
+== decode past native
+[code@483K     ] prompt  482556 | tok/s  292.9 | steps/s  114.8 | accept 0.518 | TTFT first  43.16s last   1.07s
+[prose@483K    ] prompt  482548 | tok/s  284.2 | steps/s  114.4 | accept 0.494 | TTFT first   1.01s last   1.03s
+== needle recall
+needle  274951 tok depth 10% FAIL comp 4000 | ''
+needle  274951 tok depth 50% PASS comp 115 | '8959-YK, Cusco'
+needle  274950 tok depth 90% PASS comp 189 | '1818-BW, Osaka'
+needle  483524 tok depth 10% PASS comp 119 | 'Code: 9023-UG; City: Osaka'
+needle  483524 tok depth 30% PASS comp 92 | '8102-TX, Osaka'
+needle  483524 tok depth 50% PASS comp 107 | 'The vault code is 4825-VG and the vault is in Osaka.'
+needle  483525 tok depth 70% PASS comp 142 | '8896-NH, Tallinn'
+needle  483524 tok depth 90% PASS comp 110 | '1225-UK, Lisbon'
+needle total 7/8
+== order recall (position-sensitive)
+order 0.05/0.15 expect RED PASS comp 113 | 'RED'
+order 0.40/0.50 expect RED PASS comp 289 | 'RED'
+order 0.55/0.65 expect RED PASS comp 229 | 'RED'
+order 0.85/0.95 expect RED PASS comp 282 | 'RED'
+order 0.15/0.05 expect BLUE PASS comp 235 | 'BLUE'
+order 0.50/0.40 expect BLUE PASS comp 243 | 'BLUE'
+order 0.65/0.55 expect BLUE PASS comp 232 | 'BLUE'
+order 0.95/0.85 expect BLUE PASS comp 90 | 'BLUE'
+order total 8/8
+xid=0
+DONE

@@ -1,0 +1,82 @@
+== core +0 (15:19:45)
+GPU0 gpc offset 0 range (-1000, 1000) mem offset 4000 max gfx 3210
+decode run 1: 2048 tok in 7.0s = 291 tok/s | steps/s 116.2 | accept 0.50 | TTFT 0.11s | md5 8d724166
+decode run 2: 2048 tok in 7.0s = 292 tok/s | steps/s 116.1 | accept 0.51 | TTFT 0.09s | md5 0c900da8
+decode run 3: 2048 tok in 6.4s = 322 tok/s | steps/s 116.1 | accept 0.59 | TTFT 0.09s | md5 20d0b37b
+conc 8x: prompt 17675 tok each, out 12000 tok, wall 20.6s | aggregate decode 970 tok/s | end-to-end 584 tok/s | accept 0.53
+check: 8/8 correct
+  GPU0 busy-samples 45 avg 3037 MHz, avg 314 W, peak 361 W, peak 58 C, throttle none
+  GPU1 busy-samples 46 avg 2904 MHz, avg 310 W, peak 361 W, peak 60 C, throttle none
+  GPU2 busy-samples 45 avg 2954 MHz, avg 328 W, peak 384 W, peak 60 C, throttle none
+  GPU3 busy-samples 46 avg 2891 MHz, avg 297 W, peak 349 W, peak 54 C, throttle none
+rc=0 xid_new=0 restarts_new=0
+== core +100 (15:20:33)
+GPU0 gpc offset 100 range (-1000, 1000) mem offset 4000 max gfx 3307
+decode run 1: 2048 tok in 6.4s = 322 tok/s | steps/s 117.3 | accept 0.58 | TTFT 0.09s | md5 a5a6f222
+decode run 2: 2048 tok in 7.5s = 274 tok/s | steps/s 117.2 | accept 0.45 | TTFT 0.09s | md5 1e1281df
+decode run 3: 2048 tok in 7.2s = 283 tok/s | steps/s 117.3 | accept 0.47 | TTFT 0.09s | md5 4e91ba80
+conc 8x: prompt 17662 tok each, out 12000 tok, wall 19.8s | aggregate decode 971 tok/s | end-to-end 606 tok/s | accept 0.51
+check: 8/8 correct
+  GPU0 busy-samples 44 avg 3125 MHz, avg 327 W, peak 367 W, peak 62 C, throttle none
+  GPU1 busy-samples 45 avg 2986 MHz, avg 325 W, peak 371 W, peak 64 C, throttle none
+  GPU2 busy-samples 45 avg 3036 MHz, avg 341 W, peak 392 W, peak 64 C, throttle none
+  GPU3 busy-samples 45 avg 2981 MHz, avg 308 W, peak 358 W, peak 57 C, throttle none
+rc=0 xid_new=0 restarts_new=0
+== core +150 (15:21:20)
+GPU0 gpc offset 150 range (-1000, 1000) mem offset 4000 max gfx 3360
+decode run 1: 2048 tok in 7.2s = 284 tok/s | steps/s 118.0 | accept 0.47 | TTFT 0.10s | md5 69b6acb8
+decode run 2: 2048 tok in 6.3s = 326 tok/s | steps/s 117.8 | accept 0.59 | TTFT 0.10s | md5 d884c9c5
+decode run 3: 2048 tok in 7.0s = 293 tok/s | steps/s 117.9 | accept 0.49 | TTFT 0.09s | md5 05788132
+conc 8x: prompt 17665 tok each, out 12000 tok, wall 19.9s | aggregate decode 974 tok/s | end-to-end 603 tok/s | accept 0.52
+check: 8/8 correct
+  GPU0 busy-samples 45 avg 3176 MHz, avg 331 W, peak 371 W, peak 64 C, throttle none
+  GPU1 busy-samples 46 avg 3044 MHz, avg 329 W, peak 375 W, peak 66 C, throttle none
+  GPU2 busy-samples 45 avg 3093 MHz, avg 347 W, peak 399 W, peak 66 C, throttle none
+  GPU3 busy-samples 44 avg 3033 MHz, avg 313 W, peak 363 W, peak 59 C, throttle none
+rc=0 xid_new=0 restarts_new=0
+== core +200 (15:22:07)
+GPU0 gpc offset 200 range (-1000, 1000) mem offset 4000 max gfx 3405
+decode run 1: 2048 tok in 6.9s = 295 tok/s | steps/s 118.6 | accept 0.50 | TTFT 0.10s | md5 4e8ed6c6
+decode run 2: 2048 tok in 7.1s = 289 tok/s | steps/s 118.5 | accept 0.48 | TTFT 0.09s | md5 4af56d53
+decode run 3: 2048 tok in 5.7s = 362 tok/s | steps/s 118.4 | accept 0.69 | TTFT 0.09s | md5 945b7c61
+conc 8x: prompt 17674 tok each, out 12000 tok, wall 19.8s | aggregate decode 970 tok/s | end-to-end 605 tok/s | accept 0.51
+check: 8/8 correct
+  GPU0 busy-samples 42 avg 3220 MHz, avg 337 W, peak 373 W, peak 65 C, throttle none
+  GPU1 busy-samples 44 avg 3087 MHz, avg 333 W, peak 377 W, peak 67 C, throttle none
+  GPU2 busy-samples 44 avg 3132 MHz, avg 351 W, peak 402 W, peak 66 C, throttle none
+  GPU3 busy-samples 43 avg 3078 MHz, avg 318 W, peak 365 W, peak 60 C, throttle none
+rc=0 xid_new=0 restarts_new=0
+== core +250 (15:22:53)
+GPU0 gpc offset 250 range (-1000, 1000) mem offset 4000 max gfx 3457
+decode run 1: 2048 tok in 6.4s = 321 tok/s | steps/s 119.1 | accept 0.56 | TTFT 0.09s | md5 d4b1c6f2
+decode run 2: 2048 tok in 6.8s = 302 tok/s | steps/s 119.2 | accept 0.51 | TTFT 0.09s | md5 965d3fa5
+decode run 3: 2048 tok in 7.7s = 267 tok/s | steps/s 119.0 | accept 0.41 | TTFT 0.09s | md5 e9adc5af
+conc 8x: prompt 17661 tok each, out 12000 tok, wall 19.6s | aggregate decode 991 tok/s | end-to-end 614 tok/s | accept 0.51
+check: 8/8 correct
+  GPU0 busy-samples 43 avg 3266 MHz, avg 336 W, peak 374 W, peak 65 C, throttle none
+  GPU1 busy-samples 43 avg 3126 MHz, avg 335 W, peak 380 W, peak 67 C, throttle none
+  GPU2 busy-samples 43 avg 3177 MHz, avg 348 W, peak 402 W, peak 66 C, throttle none
+  GPU3 busy-samples 43 avg 3130 MHz, avg 319 W, peak 367 W, peak 60 C, throttle none
+rc=0 xid_new=0 restarts_new=0
+== core +300 (15:23:40)
+GPU0 gpc offset 300 range (-1000, 1000) mem offset 4000 max gfx 3510
+Traceback (most recent call last):
+  File "/home/USER/bench/bench.py", line 85, in <module>
+    if a == "decode": decode()
+                      ^^^^^^^^
+  File "/home/USER/bench/bench.py", line 42, in decode
+    toks = u["completion_tokens"]; dt = t1 - f
+           ~^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+  GPU0 busy-samples 305 avg 3351 MHz, avg 130 W, peak 328 W, peak 62 C, throttle none
+  GPU1 busy-samples 305 avg 3209 MHz, avg 127 W, peak 323 W, peak 64 C, throttle none
+  GPU2 busy-samples 305 avg 3267 MHz, avg 129 W, peak 341 W, peak 64 C, throttle none
+  GPU3 busy-samples 305 avg 3199 MHz, avg 116 W, peak 305 W, peak 57 C, throttle none
+rc=1 xid_new=0 restarts_new=0
+STOP-rc
+== reset core offset 0 (15:28:46)
+GPU0 gpc offset 0 range (-1000, 1000) mem offset 4000 max gfx 3210
+GPU1 gpc offset 0 range (-1000, 1000) mem offset 4000 max gfx 3105
+GPU2 gpc offset 0 range (-1000, 1000) mem offset 4000 max gfx 3105
+GPU3 gpc offset 0 range (-1000, 1000) mem offset 4000 max gfx 3105
+DONE
