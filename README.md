@@ -29,13 +29,10 @@ These are the tools behind every performance number I publish. The point of this
 
 | Metric | Value |
 |---|---|
-| Step rate | 112.3 idle → 116.1 with VRAM +4000 offset (author baseline 106) |
+| Step rate | 112.3 idle → 116.1 with VRAM +4000 offset (recipe's published baseline 106) |
 | Decode, single stream (temp 0 + thinking) | 292 code / 256 prose / 265 zh tok/s |
 | Aggregate, 8-way | ~1,200 tok/s |
 | Prefill | ~12.5 K tok/s |
 | `--max-num-seqs` fix | 16-way: 552 → 1,136 tok/s (CUDA-graph capture boundary) |
 | vLLM vs C++ engine | 1.5× single-stream gap lives in per-step latency (5.9 vs 9.1 ms), not acceptance rate |
 
-Local paths and hostnames are redacted. Model weights and third-party engines are not included; recipes point to upstream (QWEN-PEDIA r10, Basalt).
-
-— Harry · 2026
