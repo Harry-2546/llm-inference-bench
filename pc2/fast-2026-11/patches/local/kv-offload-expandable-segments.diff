@@ -1,0 +1,14 @@
+--- a/vllm/config/vllm.py
++++ b/vllm/config/vllm.py
+@@ -1383,6 +1383,11 @@
+             return
+         if self.model_config is not None and (self.model_config.enable_cumem_allocator):
+             return
++        # local patch (cf. vllm#42405): SimpleCPUOffloadConnector only copies by
++        # virtual address (cuMemcpyBatchAsync on data_ptr of never-freed KV
++        # tensors) and pins host memory only, so VMM remaps do not affect it.
++        if self.kv_transfer_config.kv_connector == "SimpleCPUOffloadConnector":
++            return
+ 
+         raise ValueError(
+             f"KV connector {self.kv_transfer_config.kv_connector} is "
